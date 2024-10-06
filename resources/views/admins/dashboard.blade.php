@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('content')
+    {{ Breadcrumbs::render('admin.dashboard') }}
     <div class="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
         <!-- Main widget -->
         <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 sm:p-6">
@@ -336,11 +337,11 @@
                         <ul class="py-1" role="none">
                             <li>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    role="menuitem">Yesterday</a>
+                                    role="menuitem">Hôm qua</a>
                             </li>
                             <li>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    role="menuitem">Today</a>
+                                    role="menuitem">Hôm nay</a>
                             </li>
                             <li>
                                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -648,5 +649,5 @@
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
 @endsection
