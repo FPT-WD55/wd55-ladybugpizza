@@ -23,7 +23,7 @@
                     <div class="col-span-2">
 
                         {{-- update info form --}}
-                        <form action="{{ route('client.profile.postUpdate', $users->id) }}" class="mb-8" method="POST">
+                        <form action="{{ route('client.profile.postUpdate', $users->id) }}" class="mb-8" method="">
                             @csrf
                             @method('PUT')
                             <div class="mb-6 flex items-center">
