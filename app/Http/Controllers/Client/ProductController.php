@@ -35,9 +35,9 @@ class ProductController extends Controller
         $product = Product::where('slug', $slug)->first();
 
         $attributes = Attribute::with('values')
-        ->where('category_id', $product->category->id)
-        ->where('status', 1)
-        ->get();
+            ->where('category_id', $product->category->id)
+            ->where('status', 1)
+            ->get();
 
         // dd($attributes);
 
@@ -66,12 +66,10 @@ class ProductController extends Controller
     public function postFavorite($slug)
     {
         $product = Product::where('slug', $slug)->first();
-
         // Kiểm tra xem người dùng đã đăng nhập chưa
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thêm sản phẩm vào yêu thích!');
         }
-
         if ($product) {
             // Kiểm tra xem sản phẩm đã có trong yêu thích chưa
             if (!Favorite::where('user_id', Auth::id())->where('product_id', $product->id)->exists()) {
@@ -80,7 +78,6 @@ class ProductController extends Controller
                     'product_id' => $product->id,
                 ]);
             }
-
             return back()->with('success', 'Sản phẩm đã được thêm vào yêu thích!');
         }
 
