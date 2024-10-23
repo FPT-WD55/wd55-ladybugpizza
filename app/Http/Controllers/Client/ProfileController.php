@@ -16,8 +16,10 @@ use App\Models\MembershipRank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Promotion;
 use dvhcvn;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserSetting;
 
 class ProfileController extends Controller
 {
@@ -177,15 +179,82 @@ class ProfileController extends Controller
 		$addresses = Address::where('user_id', $user->id)->with('user')->paginate(6);
 		return view('clients.profile.address.index', compact('addresses'));
 	}
-
 	public function settings()
 	{
-		return view('clients.profile.settings');
+
+		$user = Auth::user();
+
+		// Kiểm tra xem người dùng đã đăng nhập chưa
+		if (!$user) {
+			return redirect()->route('login'); // Hoặc redirect đến trang khác
+		}
+
+		// Lấy cài đặt của người dùng
+		$userSetting = $user->userSetting ?? UserSetting::create(['user_id' => $user->id]);
+
+		// Trả về view với thông tin cài đặt
+		return view('clients.profile.settings', compact('userSetting'));
+	}
+
+	public function postSettings(Request $request)
+	{
+		// Xác thực dữ liệu
+		$request->validate([
+			'email_order' => 'boolean',
+			'email_promotions' => 'boolean',
+			'email_security' => 'boolean',
+			'push_order' => 'boolean',
+			'push_promotions' => 'boolean',
+			'push_security' => 'boolean',
+		]);
+
+		// Cập nhật hoặc tạo mới cài đặt người dùng
+		UserSetting::updateOrCreate(
+			['user_id' => Auth::id()],
+			$request->only([
+				'email_order',
+				'email_promotions',
+				'email_security',
+				'push_order',
+				'push_promotions',
+				'push_security',
+			])
+		);
+
+		return redirect()->back()->with('success', 'Cài đặt đã được cập nhật thành công.');
 	}
 
 	public function promotion()
 	{
-		return view('clients.profile.promotion');
+		$user = Auth::user();
+		$userRankId = $user->rank_id; // Giả sử model User có thuộc tính rank_id
+
+		// Lấy mã giảm giá của người dùng
+		$myPromotions = Promotion::where(function ($query) use ($userRankId) {
+			$query->where('is_global', 1) // Tất cả người dùng
+				->orWhere(function ($subQuery) use ($userRankId) {
+					$subQuery->where('is_global', 2) // Không phải tất cả
+						->where('rank_id', $userRankId); // Khớp với rank_id của người dùng
+				});
+		})->get();
+
+		// Lấy mã giảm giá khả dụng
+		$eligiblePromotions = Promotion::where('status', 1) // Mã đang hoạt động
+			->where('start_date', '<=', now())
+			->where('end_date', '>=', now())
+			->where(function ($query) use ($userRankId) {
+				$query->where('is_global', 1) // Tất cả người dùng
+					->orWhere(function ($subQuery) use ($userRankId) {
+						$subQuery->where('is_global', 2) // Không phải tất cả
+							->where('rank_id', $userRankId); // Khớp với rank_id của người dùng
+					});
+			})
+			->get();
+
+		return view('clients.profile.promotion', [
+			'myPromotions' => $myPromotions,
+			'eligiblePromotions' => $eligiblePromotions,
+		]);
 	}
 	public function addLocation()
 	{

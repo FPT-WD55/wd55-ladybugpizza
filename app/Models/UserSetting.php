@@ -18,4 +18,9 @@ class UserSetting extends Model
         'push_promotions',
         'push_security',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

@@ -72,6 +72,7 @@ Route::prefix('/')->group(function () {
     Route::post('/profile/address', [ProfileController::class, 'storeLocation'])->name('client.profile.post-location');
     Route::get('/profile/address/edit/{address}', [ProfileController::class, 'editLocation'])->name('client.profile.edit-location');
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('client.profile.settings');
+    Route::post('/profile/settings', [ProfileController::class, 'postSettings'])->name('client.profile.settings.post');
     Route::get('/profile/promotion', [ProfileController::class, 'promotion'])->name('client.profile.promotion');
     Route::get('/about-us', [PageController::class, 'aboutUs'])->name('client.about-us');
     Route::get('/policies', [PageController::class, 'policies'])->name('client.policies');
