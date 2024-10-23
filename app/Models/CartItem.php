@@ -12,6 +12,8 @@ class CartItem extends Model
     protected $fillable = [
         'cart_id',
         'product_id',
+        'attributes',
+        'toppings',
         'price',
         'discount_price',
         'quantity',
@@ -28,13 +30,13 @@ class CartItem extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function toppings()
+    public function getAttributesAttribute()
     {
-        return $this->hasMany(CartItemTopping::class);
+        return json_decode($this->attributes, true);
     }
 
-    public function attributes()
+    public function getToppingsAttribute()
     {
-        return $this->belongsTo(CartItemAttribute::class);
-    }
+        return json_decode($this->toppings, true);
+    }    
 }
